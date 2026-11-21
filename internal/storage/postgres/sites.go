@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kaherro/MultiPing/internal/domain"
 )
@@ -16,17 +18,23 @@ func NewSiteRepo(pool *pgxpool.Pool) *SiteRepo {
 }
 
 func (r *SiteRepo) Create(ctx context.Context, s *domain.Site) error {
-	return r.pool.QueryRow(ctx, 
+	err := r.pool.QueryRow(ctx, 
 		`INSERT INTO sites (url, interval_sec, timeout_ms) 
 		VALUES ($1, $2, $3) 
 		RETURNING id, enabled, created_at`, 
 		s.URL, s.IntervalSec, s.TimeoutMS,
-		).Scan(s.ID, s.Enabled, s.CreatedAt)
+		).Scan(&s.ID, &s.Enabled, &s.CreatedAt)
+
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		return domain.ErrAlreadyExists
+	}
+	return err
 }
 
 func (r *SiteRepo) List(ctx context.Context) ([]domain.Site, error) {
 	rows, err := r.pool.Query(ctx, 
-	`SELECT id, url, interval_sec, timeout_ms, enable, created_at
+	`SELECT id, url, interval_sec, timeout_ms, enabled, created_at
 	FROM sites ORDER BY id`,
 	)
 	if err != nil {
@@ -37,8 +45,8 @@ func (r *SiteRepo) List(ctx context.Context) ([]domain.Site, error) {
 	sites := []domain.Site{}
 	for rows.Next() {
 		var s domain.Site
-		if err := rows.Scan(&s.ID, s.URL, s.IntervalSec, s.TimeoutMS, 
-			s.Enabled, s.CreatedAt); err != nil {
+		if err := rows.Scan(&s.ID, &s.URL, &s.IntervalSec, &s.TimeoutMS, 
+			&s.Enabled, &s.CreatedAt); err != nil {
 			return nil, err
 		}
 		sites = append(sites, s)

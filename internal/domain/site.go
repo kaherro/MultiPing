@@ -6,6 +6,7 @@ import (
 )
 
 var ErrNotFound = errors.New("not found")
+var ErrAlreadyExists = errors.New("already exists")
 
 type Site struct {
 	ID          int64     `json:"id"`

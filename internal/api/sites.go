@@ -28,9 +28,9 @@ func NewSitesHandler(store SiteStore, logger *slog.Logger) *SitesHandler {
 }
 
 func (h *SitesHandler) Register(mux *http.ServeMux) {
-	mux.HandleFunc("POST sites", h.create); 
-	mux.HandleFunc("GET sites", h.list); 
-	mux.HandleFunc("DELETE sites", h.delete);
+	mux.HandleFunc("POST /sites", h.create); 
+	mux.HandleFunc("GET /sites", h.list); 
+	mux.HandleFunc("DELETE /sites/{id}", h.delete);
 }
 
 func (h *SitesHandler) create(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +56,10 @@ func (h *SitesHandler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.store.Create(r.Context(), &s); err != nil {
+		if errors.Is(err, domain.ErrAlreadyExists) {
+			writeError(w, http.StatusConflict, "site with this url already exists")
+			return
+		}
 		h.logger.Error("create site", "err", err)
 		writeError(w, http.StatusInternalServerError, "internal error")
 		return
