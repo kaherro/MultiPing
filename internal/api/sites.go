@@ -56,6 +56,10 @@ func (h *SitesHandler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.store.Create(r.Context(), &s); err != nil {
+		if errors.Is(err, domain.ErrAlreadyExists) {
+			writeError(w, http.StatusConflict, "site with this url already exists")
+			return
+		}
 		h.logger.Error("create site", "err", err)
 		writeError(w, http.StatusInternalServerError, "internal error")
 		return
