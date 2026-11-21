@@ -15,7 +15,7 @@ func NewSiteRepo(pool *pgxpool.Pool) *SiteRepo {
 	return &SiteRepo{pool: pool}
 }
 
-func (r *SiteRepo) Add(ctx context.Context, s *domain.Site) error {
+func (r *SiteRepo) Create(ctx context.Context, s *domain.Site) error {
 	return r.pool.QueryRow(ctx, 
 		`INSERT INTO sites (url, interval_sec, timeout_ms) 
 		VALUES ($1, $2, $3) 
