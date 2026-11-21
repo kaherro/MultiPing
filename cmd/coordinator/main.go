@@ -11,7 +11,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/kaherro/MultiPing/internal/api"
 	"github.com/kaherro/MultiPing/internal/config"
+	"github.com/kaherro/MultiPing/internal/storage/postgres"
 )
 
 func main() {
@@ -36,12 +38,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info("coordinator started")
-
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
+
+	sites := postgres.NewSites(pool)
+	api.NewHandler(sites, logger).Register(mux)
 
 	srv := &http.Server{Addr: cfg.HTTPAddr, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
 
