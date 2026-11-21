@@ -43,8 +43,8 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	sites := postgres.NewSites(pool)
-	api.NewHandler(sites, logger).Register(mux)
+	sites := api.NewSitesHandler(postgres.NewSiteRepo(pool), logger)
+	sites.Register(mux)
 
 	srv := &http.Server{Addr: cfg.HTTPAddr, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
 
