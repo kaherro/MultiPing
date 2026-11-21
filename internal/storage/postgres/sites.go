@@ -32,6 +32,7 @@ func (r *SiteRepo) List(ctx context.Context, s *domain.Site) ([]domain.Site, err
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close() 
 
 	sites := []domain.Site{}
 	for rows.Next() {
