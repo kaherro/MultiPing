@@ -24,7 +24,7 @@ func (r *SiteRepo) Create(ctx context.Context, s *domain.Site) error {
 		).Scan(s.ID, s.Enabled, s.CreatedAt)
 }
 
-func (r *SiteRepo) List(ctx context.Context, s *domain.Site) ([]domain.Site, error) {
+func (r *SiteRepo) List(ctx context.Context) ([]domain.Site, error) {
 	rows, err := r.pool.Query(ctx, 
 	`SELECT id, url, interval_sec, timeout_ms, enable, created_at
 	FROM sites ORDER BY id`,
