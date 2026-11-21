@@ -28,9 +28,9 @@ func NewSitesHandler(store SiteStore, logger *slog.Logger) *SitesHandler {
 }
 
 func (h *SitesHandler) Register(mux *http.ServeMux) {
-	mux.HandleFunc("POST sites", h.create); 
-	mux.HandleFunc("GET sites", h.list); 
-	mux.HandleFunc("DELETE sites", h.delete);
+	mux.HandleFunc("POST /sites", h.create); 
+	mux.HandleFunc("GET /sites", h.list); 
+	mux.HandleFunc("DELETE /sites/{id}", h.delete);
 }
 
 func (h *SitesHandler) create(w http.ResponseWriter, r *http.Request) {
