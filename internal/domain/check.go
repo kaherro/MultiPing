@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type Checker struct {
+type CheckResult struct {
 	SiteID    int64
 	OK        bool
 	HTTPCode  int
