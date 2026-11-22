@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kaherro/MultiPing/internal/api"
+	"github.com/kaherro/MultiPing/internal/coordinator/api"
 	"github.com/kaherro/MultiPing/internal/config"
 	"github.com/kaherro/MultiPing/internal/storage/postgres"
 )
