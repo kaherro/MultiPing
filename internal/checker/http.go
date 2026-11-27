@@ -13,7 +13,7 @@ type HTTPChecker struct {
 }
 
 func (c *HTTPChecker) Check(ctx context.Context, site domain.Site) domain.CheckResult {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(site.TimeoutMS) * time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(site.TimeoutMS) * time.Millisecond)
 	defer cancel()
 
 	res := domain.CheckResult{SiteID: site.ID, CheckedAT: time.Now()}
