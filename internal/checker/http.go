@@ -12,8 +12,14 @@ type HTTPChecker struct {
 	client *http.Client
 }
 
+func NewHTTPChecker() *HTTPChecker {
+	return &HTTPChecker{
+		client: &http.Client{},
+	}
+}
+
 func (c *HTTPChecker) Check(ctx context.Context, site domain.Site) domain.CheckResult {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(site.TimeoutMS) * time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(site.TimeoutMS) * time.Millisecond)
 	defer cancel()
 
 	res := domain.CheckResult{SiteID: site.ID, CheckedAT: time.Now()}
@@ -25,7 +31,7 @@ func (c *HTTPChecker) Check(ctx context.Context, site domain.Site) domain.CheckR
 
 	start := time.Now()
 	resp, err := c.client.Do(req)
-	res.LatencyMS = int(time.Since(start).Microseconds())
+	res.LatencyMS = int(time.Since(start).Milliseconds())
 	if err != nil {
 		res.Error = err
 		return res
