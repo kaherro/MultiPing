@@ -13,15 +13,15 @@ import (
 )
 
 type Scheduler struct {
-	sites postgres.SiteRepo
-	results postgres.CheckResultRepo
+	sites *postgres.SiteRepo
+	results *postgres.CheckResultRepo
 	checker checker.Checker	
 	workers int
 	interval time.Duration
 	logger *slog.Logger
 }
 
-func NewScheduler (sites postgres.SiteRepo, results postgres.CheckResultRepo, 
+func NewScheduler (sites *postgres.SiteRepo, results *postgres.CheckResultRepo, 
 	checker checker.Checker, workers int, interval time.Duration, logger *slog.Logger) *Scheduler {
 	return &Scheduler{
 		sites: sites, 
