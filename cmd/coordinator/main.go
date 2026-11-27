@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kaherro/MultiPing/internal/coordinator/api"
+	"github.com/kaherro/MultiPing/internal/checker"
 	"github.com/kaherro/MultiPing/internal/config"
+	"github.com/kaherro/MultiPing/internal/coordinator/api"
+	"github.com/kaherro/MultiPing/internal/coordinator/scheduler"
 	"github.com/kaherro/MultiPing/internal/storage/postgres"
 )
 
@@ -38,13 +40,31 @@ func main() {
 		os.Exit(1)
 	}
 
+	siteRepo := postgres.NewSiteRepo(pool)
+	checkResultRepo := postgres.NewCheckResultRepo(pool)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	sites := api.NewSitesHandler(postgres.NewSiteRepo(pool), logger)
-	sites.Register(mux)
+	sitesHandler := api.NewSitesHandler(siteRepo, logger)
+	sitesHandler.Register(mux)
+	httpChecker := checker.NewHTTPChecker()
+	sched := scheduler.NewScheduler(
+		siteRepo,
+		checkResultRepo,
+		httpChecker,
+		8,
+		30*time.Second,
+		logger,
+	)
+
+	go func() {
+		if err := sched.Run(ctx); err != nil {
+			logger.Error("scheduler stopped with error", "error", err)
+			stop()
+		}
+	}()
 
 	srv := &http.Server{Addr: cfg.HTTPAddr, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
 
