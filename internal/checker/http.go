@@ -12,6 +12,12 @@ type HTTPChecker struct {
 	client *http.Client
 }
 
+func NewHTTPChecker() *HTTPChecker {
+	return &HTTPChecker{
+		client: &http.Client{},
+	}
+}
+
 func (c *HTTPChecker) Check(ctx context.Context, site domain.Site) domain.CheckResult {
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(site.TimeoutMS) * time.Millisecond)
 	defer cancel()
