@@ -51,7 +51,7 @@ func (s *Scheduler) Run(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			s.logger.Info("scheduler stopped")
-			return ctx.Err() 
+			return nil
 		case <-ticker.C:
 			if err := s.runOnce(ctx); err != nil && ctx.Err() == nil {
 				s.logger.Error("scheduler failed to run probe", "error", err)
