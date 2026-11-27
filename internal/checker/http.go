@@ -25,7 +25,7 @@ func (c *HTTPChecker) Check(ctx context.Context, site domain.Site) domain.CheckR
 
 	start := time.Now()
 	resp, err := c.client.Do(req)
-	res.LatencyMS = int(time.Since(start).Microseconds())
+	res.LatencyMS = int(time.Since(start).Milliseconds())
 	if err != nil {
 		res.Error = err
 		return res
