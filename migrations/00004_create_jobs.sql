@@ -3,7 +3,7 @@
 CREATE TABLE jobs (
     id           BIGSERIAL PRIMARY KEY,
     site_id      BIGINT NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
-    agent_id     BIGINT NOT NULL REFERENCES agents(id)
+    agent_id     BIGINT NOT NULL REFERENCES agents(id),
     status       TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'assigned', 'completed', 'failed')),
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
