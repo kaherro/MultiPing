@@ -14,7 +14,7 @@ const (
 type Job struct {
     ID         int64
     SiteID     int64
-    AgentID    *int64
+    AgentID    int64
     Status     JobStatus
     CreatedAt  time.Time
     AssignedAt *time.Time
