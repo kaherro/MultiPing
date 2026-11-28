@@ -8,5 +8,5 @@ type Agent struct {
     TokenHash  string
     Enabled    bool
     LastSeenAt *time.Time
-    CreatedAt  time.Time
+    CreatedAt  *time.Time
 }
